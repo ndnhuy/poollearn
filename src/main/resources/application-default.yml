@@ -2,7 +2,6 @@ server:
   port: 8001
 
 spring:
-  application.name: randomstring
   datasource:
     url: jdbc:mysql://${DOCKER_HOST_IP:localhost}:6601/poollearn
     username: root
@@ -10,15 +9,3 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
   jpa:
     show-sql: true
-#
-#logging:
-#  level:
-#    root: INFO
-#    org.springframework.web: INFO
-#    org:
-#      hibernate:
-#        DEBUG
-#        # sql: debug
-#        # type:
-#        #   descriptor:
-#        #     sql: TRACE
