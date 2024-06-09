@@ -1,14 +1,19 @@
 version: "3.9"
 services:
-#  randomstring:
-#    image: randomstring
-#    build:
-#      dockerfile: ./Dockerfile
-#    ports:
-#      - "8001:8001"
-#    depends_on:
-#      - db
-#    restart: unless-stopped
+  orderservice:
+    image: orderservice
+    build:
+      dockerfile: ./Dockerfile
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 500M
   db:
     image: mysql:8.0.31
     ports:
@@ -17,9 +22,30 @@ services:
       - MYSQL_ROOT_PASSWORD=root
     restart: unless-stopped
     volumes:
-      - db_data_randomstring:/var/lib/mysql
+      - db_data:/var/lib/mysql
       - ./deployment/init.sql:/docker-entrypoint-initdb.d/init.sql
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    command:
+      - --web.enable-remote-write-receiver
+      - --enable-feature=native-histograms
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:10.1.2
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_BASIC_ENABLED=false
+    volumes:
+      - ./grafana:/etc/grafana/provisioning/
 
 volumes:
-  db_data_randomstring:
+  db_data:
     driver: local

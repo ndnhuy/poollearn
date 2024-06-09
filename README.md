@@ -1,8 +1,15 @@
 # docker build
+
 ```
-docker build -t demo-orders .
+docker-compose up -d --build orderservice
 ```
 
 # testing
-curl -d 'value1' -X POST http://localhost:8001/kvstore/key1
-curl http://localhost:8001/kvstore/key1
+
+curl --request POST http://localhost:8001/orders
+
+# vegeta attack
+
+```
+echo "POST http://localhost:8001/orders" | vegeta attack -rate=50 -duration=60s | tee results.bin | vegeta report
+```
